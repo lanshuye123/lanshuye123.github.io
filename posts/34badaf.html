@@ -1,0 +1,280 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>运维的抢修笔记·升级系统与Coreutils | 岚椿桦's Blog</title><meta name="author" content="岚椿桦"><meta name="copyright" content="岚椿桦"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="升级Ubuntu系统与Coreutils的一些故事（事故）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="运维的抢修笔记·升级系统与Coreutils">
+<meta property="og:url" content="https://blog.jamaccao.cn/posts/34badaf.html">
+<meta property="og:site_name" content="岚椿桦&#39;s Blog">
+<meta property="og:description" content="升级Ubuntu系统与Coreutils的一些故事（事故）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://q.qlogo.cn/headimg_dl?dst_uin=927980270&spec=640&img_type=jpg">
+<meta property="article:published_time" content="2026-06-14T16:13:00.000Z">
+<meta property="article:modified_time" content="2026-06-14T17:32:09.067Z">
+<meta property="article:author" content="岚椿桦">
+<meta property="article:tag" content="技术">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://q.qlogo.cn/headimg_dl?dst_uin=927980270&spec=640&img_type=jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://blog.jamaccao.cn/posts/34badaf.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '运维的抢修笔记·升级系统与Coreutils',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta http-equiv="Access-Control-Allow-Origin" content="*" /><meta name="generator" content="Hexo 8.1.1"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/images/sunshine.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">岚椿桦's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">运维的抢修笔记·升级系统与Coreutils</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">运维的抢修笔记·升级系统与Coreutils</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-06-14T16:13:00.000Z" title="发表于 2026-06-15 00:13:00">2026-06-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-14T17:32:09.067Z" title="更新于 2026-06-15 01:32:09">2026-06-15</time></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="背景引入"><a href="#背景引入" class="headerlink" title="背景引入"></a>背景引入</h2><p>在Ubuntu 26.04 LTS中，引入了以Rust重构的<code>uutils</code>作为传统的GNU<code>coreutils</code>的替代，同时似乎这个被配置成为了默认的coreutils提供者。</p>
+<p>说到coreutils，这个名字可能会有些陌生，但如果说是<code>ls</code>、<code>rm</code>、<code>cat</code>这些耳熟能详的系统级基础命令，那就不奇怪了。coreutils就是在通常的Linux发行版中提供这些最基本命令的软件包。</p>
+<p>一些相关链接</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.gnu.org/software/coreutils/">GNU Coreutils</a></li>
+<li><a target="_blank" rel="noopener" href="https://uutils.github.io/">UUtils</a></li>
+</ul>
+<h2 id="事故起因"><a href="#事故起因" class="headerlink" title="事故起因"></a>事故起因</h2><p>最近出于某些原因，把压箱底吃灰了很久的<a target="_blank" rel="noopener" href="http://www.orangepi.cn/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-Pro.html">香橙派5Pro</a>又重新拿了出来，用作一些用途。这块板子搭载了RK3588S芯片，性能在ARM开发板中算是第一梯队，综合算力还是很给力的，但生态就一言难尽了。在配置系统的过程中，自然而言地准备滚一下系统（应该算是Arch用户的后遗症），结果发现原本配置的镜像站（清华源IPv6 only）访问不上，主要的原因是路由器v6部分有些问题，但没怎么想着从路由器端解决，打算直接修改apt配置文件换自动解析版本的清华源。</p>
+<p>参考了清华源的<a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu-ports/">配置文档</a>，但是我当时看都没看，直接无脑地将清华源给出的适用于最新的Ubuntu 26 LTS的apt源粘贴到了我的<code>/etc/apt/sources.list</code>。于是故事从这里开始。 （注：此前设备上跑得是Ubuntu jammy，即Ubuntu 22 LTS。一个两代的大版本跨越，我居然浑然不觉。）</p>
+<p>其实如果在这里，我执行的下面这一组指令，那么这个过程其实算是一个没那么正规的升级流程，倒也没啥问题</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt full-upgrade</span><br></pre></td></tr></table></figure>
+<p>因为<code>full-upgrade</code>会处理依赖关系和需要移除的冲突包，起码不会出现半路把核心工具给删了的情况。然而，我也没意识到自己在干什么，尤其是没意识到大版本变了，一如既往的执行了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt upgrade</span><br></pre></td></tr></table></figure>
+<p><code>upgrade</code>只会更新已有包的版本，不会处理需要“安装新包同时移除旧包”的变更。而Ubuntu 26.04恰恰把<code>coreutils</code>这个Essential包从<code>coreutils-from-gnu</code>替换成了<code>coreutils-from-uutils</code>——这属于“替换式”变更，<code>apt upgrade</code>只会傻乎乎地把<code>coreutils-from-gnu</code>标记为“不再需要”然后删除，却不会自动安装新的替代者。结果就是：包管理器先卸了旧的GNU coreutils，然后在安装新的uutils coreutils的过程中，需要执行post-install脚本，而这些脚本要用到<code>rm</code>、<code>cp</code>、<code>chmod</code>等命令——可是它们已经被删了啊！经典的“你卸掉了梯子，却想让我下楼取快递”的困境。</p>
+<p>其实当时我还纳闷了一下：我有这么久没更新吗，居然有这么多包要更新。屏幕上滚过了上百个包的下载和解包信息，直到这样一条报错显示到了终端中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">dpkg: warning: &#x27;rm&#x27; not found in PATH or not executable</span><br><span class="line">dpkg: error: 1 expected program not found in PATH or not executable</span><br><span class="line">Note: root&#x27;s PATH should usually contain /usr/local/sbin, /usr/sbin and /sbin</span><br><span class="line">sh: 1: /bin/echo: not found</span><br><span class="line">E: Sub-process /usr/bin/dpkg returned an error code (2)</span><br><span class="line">E: Problem executing scripts DPkg::Post-Invoke &#x27;/usr/bin/test -e /usr/share/dbus-1/system-services/org.freedesktop.PackageKit.service &amp;&amp; /usr/bin/test -S /var/run/dbus/system_bus_socket &amp;&amp; /usr/bin/gdbus call --system --dest org.freedesktop.PackageKit --object-path /org/freedesktop/PackageKit --timeout 4 --method org.freedesktop.PackageKit.StateHasChanged cache-update &gt; /dev/null; /bin/echo &gt; /dev/null&#x27;</span><br><span class="line">E: Sub-process returned an error code</span><br></pre></td></tr></table></figure>
+<p>等等，你告诉我什么没了？<code>rm</code>？</p>
+<h2 id="事故分析"><a href="#事故分析" class="headerlink" title="事故分析"></a>事故分析</h2><p>似乎是因为我不正确的“更新”方式，原本的<code>coreutils</code>(在这个版本里面被称作<code>coreutils-from-gnu</code>)卸掉了，但是似乎<code>coreutils-from-uutils</code>的安装过程也需要用到<code>rm</code>等命令。这造成了一个死锁：包管理器想装新coreutils，但装新coreutils需要用到老coreutils的命令（通过postinst脚本）。更糟糕的是，<code>dpkg</code>自身的一些辅助脚本（比如配置触发器和post-invoke）也依赖这些基本命令。系统现在处于一个“缺胳膊少腿”但还能勉强维持呼吸的状态——SSH还连着，bash还能用，Python和Perl等解释器还在，glibc也在，但任何试图调用外部命令的行为都会失败。</p>
+<p>核心问题：<code>/bin</code>、<code>/usr/bin</code>下除了shell内建命令和极少数静态编译的二进制，大部分都是coreutils提供的软链接。而<code>/usr/bin/dpkg</code>本身虽然还在，但它的子进程执行<code>rm</code>时，会在PATH中搜索——找不到，直接报错退出。</p>
+<h2 id="尝试解决"><a href="#尝试解决" class="headerlink" title="尝试解决"></a>尝试解决</h2><h3 id="apt自救（失败）"><a href="#apt自救（失败）" class="headerlink" title="apt自救（失败）"></a>apt自救（失败）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt remove coreutils-from-uutils --allow-remove-essential</span><br><span class="line"><span class="built_in">sudo</span> apt install coreutils-from-gnu --allow-remove-essential</span><br></pre></td></tr></table></figure>
+<p>毫无疑问，失败了，原因是没有<code>coreutils</code>提供的<code>rm</code>等命令，dpkg自己的工具脚本无法展开。</p>
+<h3 id="本机编译coreutils（失败）"><a href="#本机编译coreutils（失败）" class="headerlink" title="本机编译coreutils（失败）"></a>本机编译coreutils（失败）</h3><p>通过观察设备环境发现，<code>git</code>、<code>make</code>、<code>gcc</code>等这些工具还在，那么就还有希望（大概吧）<br>从清华源弄来一份coreutils源代码，打算现场编译，尝试自救。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">wget https://mirrors.tuna.tsinghua.edu.cn/gnu/coreutils/coreutils-9.11.tar.xz</span><br><span class="line">tar vxf coreutils-9.11.tar.xz</span><br><span class="line"><span class="built_in">cd</span> coreutils-9.11</span><br><span class="line">./configure</span><br></pre></td></tr></table></figure>
+<p>然而，问题就出在这里：<strong>configure是依赖于coreutils的</strong>。一个脚本文件怎么说都要或多或少用上几条命令吧，倒也可以理解。但具体到我这个场合就不能这么理解了。</p>
+<h3 id="复制来一份busybox-（还是失败了）"><a href="#复制来一份busybox-（还是失败了）" class="headerlink" title="复制来一份busybox （还是失败了）"></a>复制来一份busybox （还是失败了）</h3><p>这里简单提两句，<code>busybox</code>是一个更小型化的<code>coreutils</code>实现（甚至不止<code>coreutils</code>，比如<code>bash</code>，也可以由其提供），它把很多命令打包成一个二进制文件，通过<code>busybox ls</code>、<code>busybox rm</code>的方式调用，或者通过软链接来模拟各个命令。很多嵌入式系统和紧急救援环境都会预装busybox，因为它静态编译、依赖少、功能全。</p>
+<p>GitHub上有热心人已经把各平台编译好的busybox二进制文件<a target="_blank" rel="noopener" href="https://github.com/xerta555/Busybox-Binaries/">上传</a>了。只需要下载适用于我们平台(香橙派，aarch64)的即可。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https://raw.githubusercontent.com/xerta555/Busybox-Binaries/master/busybox-arm64</span><br><span class="line"><span class="built_in">chmod</span> +x busybox-arm64</span><br><span class="line"><span class="built_in">sudo</span> ./busybox-arm64 --install -s </span><br></pre></td></tr></table></figure>
+<p>等等，发现问题了吗？</p>
+<p><strong>chmod也是coreutils提供的</strong></p>
+<p>这意味着直接复制、下载二进制文件的路<strong>都走不通</strong>了。因为下载下来的文件默认是没有可执行权限的（umask通常为644），而没有可执行权限就无法运行它，也就无法用busybox内部的<code>chmod</code>给自己加权限——又是一个鸡生蛋蛋生鸡的问题。我甚至尝试了另一种方式：指望动态链接器绕过可执行权限检查</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> /lib/ld-linux-aarch64.so.1 ./busybox-arm64</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ld-linux-aarch64.so.1: cannot execute ./busybox-arm64: EACCES</span><br></pre></td></tr></table></figure>
+<p>内核的<code>execve</code>系统调用在加载ELF文件之前就会检查文件的执行权限，动态链接器只是解释ELF的程序头，它绕不过去。完蛋。</p>
+<h3 id="万能的Python救场"><a href="#万能的Python救场" class="headerlink" title="万能的Python救场"></a>万能的Python救场</h3><p>就在一筹莫展之际，设备上的Python3还能正常工作。它是由<code>python3</code>包提供的，那个包没有因为coreutils的缺失而被波及。而且Python的标准库中有<code>os.chmod</code>，这个函数直接调用C库的<code>chmod(2)</code>系统调用，根本不需要<code>/usr/bin/chmod</code>命令。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python3 -c <span class="string">&quot;import os; os.chmod(&#x27;./busybox-arm64&#x27;, 0o755);&quot;</span></span><br><span class="line"><span class="built_in">sudo</span> ./busybox-arm64 --install -s </span><br></pre></td></tr></table></figure>
+<p><strong>救场成功！</strong> </p>
+<p>事后分析：Python的os库的这些POSIX命令封装走的应该是Linux系统调用，或者是libc库的封装，而不是通过命令实现的，因此不受coreutils影响。</p>
+<p>可喜可贺。</p>
+<h2 id="后续修复"><a href="#后续修复" class="headerlink" title="后续修复"></a>后续修复</h2><p>有了 busybox 提供的临时 coreutils 之后，系统终于能喘口气了。<code>/bin/rm</code>、<code>/bin/cp</code>、<code>/bin/chmod</code> 这些软链接已经指向 <code>busybox</code>，虽然功能上不如 GNU 完整，但执行基本的文件操作绰绰有余。</p>
+<p>接下来需要解决两个问题：</p>
+<ol>
+<li><strong>修复 dpkg 的半拉子状态</strong> —— 之前 <code>coreutils-from-gnu</code> 被卸载而 <code>coreutils-from-uutils</code> 安装失败，导致大量软件包的 postinst 脚本残留，dpkg 数据库处于不一致状态。</li>
+<li><strong>完成到 Ubuntu 26.04 LTS 的正经升级</strong> —— 既然源已经指向了 26.04，而且系统已经有部分包被更新了，不如将错就错，彻底执行一次完整的 <code>full-upgrade</code>。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt remove coreutils-from-uutils  coreutils-from-gnu  coreutils --allow-remove-essential</span><br><span class="line"><span class="built_in">sudo</span> apt install coreutils-from-gnu --allow-remove-essential <span class="comment"># 这里当时还是打算用一份靠谱的GNU Coreutils，就没有尝鲜用uutils</span></span><br><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt full-upgrade</span><br></pre></td></tr></table></figure>
+<p>这次没有再出现 <code>rm not found</code> 的恐怖提示。屏幕上滚过大量升级信息，包括内核、systemd、GNOME 组件等。算是升级到了Ubuntu 26 LTS（resolute）</p>
+<p>事后我检查了 <code>/etc/os-release</code>，确认 <code>VERSION_ID=&quot;26.04&quot;</code>。折腾一圈，居然从 jammy 误打误撞升级到 resolute ，而且全程没重装系统。虽然过程惊险，但结局不算太糟。</p>
+<hr>
+<h2 id="事后诸葛亮：手搓一个-chmod"><a href="#事后诸葛亮：手搓一个-chmod" class="headerlink" title="事后诸葛亮：手搓一个 chmod"></a>事后诸葛亮：手搓一个 <code>chmod</code></h2><p>这次事故中，一个很抽象的点在于下载了busybox却没法给它加执行权限。其实在千钧一发之际，有经验的运维老手可能会想到一个更底层的办法：<strong>绕过所有用户态命令，直接通过系统调用修改文件权限</strong>。</p>
+<p>在 Linux 上，修改文件权限的系统调用是 <code>chmod(const char *pathname, mode_t mode)</code>。C 语言标准库（glibc）提供了封装，但只要写一个极简的 C 程序，调用 <code>syscall(SYS_chmod, path, mode)</code> 就行，编译出的二进制不依赖任何外部命令（当然，前提是系统还有 <code>gcc</code> 和 glibc 头文件）。具体代码可以像这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> _GNU_SOURCE</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/syscall.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    syscall(SYS_chmod, <span class="string">&quot;busybox-arm64&quot;</span>, <span class="number">0755</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>保存为 <code>chmod.c</code>，然后用 <code>gcc chmod.c -o chmod</code> 编译。如果幸运，<code>gcc</code> 还在且能工作（实际上一开始我确认过 <code>gcc</code> 没挂），就能得到一个可以给 busybox 加执行权限的救命稻草。有了它，无需 Python，直接 <code>./chmod</code> 然后 <code>./busybox-arm64 --install -s</code>，一样能反败为胜。</p>
+<p><strong>为什么当时没想到？</strong> 因为大脑在紧急状态下更倾向于「已知的、用过的方法」（比如 Python 的 <code>os.chmod</code>），而不是从零写代码。另外，大多数运维人员的肌肉记忆是「命令缺了就找 busybox &#x2F; static binary」，极少会想到现场编译一个系统调用胶水程序。这其实是个思维盲区：我们太依赖现成的工具链，而忘记了操作系统内核就在那里，系统调用是永远可用的最终保障。</p>
+<p>当然，这个方案也有前提：<code>gcc</code> 能跑、glibc 头文件还在、系统调用表没被阉割。在本次事故中，这些条件全部满足。如果连 <code>gcc</code> 都没了，那就真的只能靠 Python 或者手写汇编了 —— 不过那就属于另一个层级的灾难了。</p>
+<hr>
+<p><strong>本文根据2026年6月14日下午的真实运维事故改编，以此来记住这次教训。</strong></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.jamaccao.cn">岚椿桦</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.jamaccao.cn/posts/34badaf.html">https://blog.jamaccao.cn/posts/34badaf.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.jamaccao.cn" target="_blank">岚椿桦's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%8A%80%E6%9C%AF/">技术</a></div><div class="post-share"><div class="social-share" data-image="http://q.qlogo.cn/headimg_dl?dst_uin=927980270&amp;spec=640&amp;img_type=jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/41db89e7.html" title="华为Quidway S5700配置VLAN"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">华为Quidway S5700配置VLAN</div></div><div class="info-2"><div class="info-item-1">给交换机配置VLAN</div></div></div></a><a class="pagination-related" href="/posts/698a8ca8.html" title="烧录AT89C52两三事"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">烧录AT89C52两三事</div></div><div class="info-2"><div class="info-item-1">近日，偶然获得了一台装载了AT89C52的设备，了解了一下有关51系列的内容</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related no-desc" href="/posts/68ed1d1d.html" title="关于汇编的一些浅见"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-07</div><div class="info-item-2">关于汇编的一些浅见</div></div></div></a><a class="pagination-related" href="/posts/3acb0d81.html" title="关于安装Arch Linux两三事"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-29</div><div class="info-item-2">关于安装Arch Linux两三事</div></div><div class="info-2"><div class="info-item-1">Arch Linux是一个Linux发行版。</div></div></div></a><a class="pagination-related" href="/posts/46b493f3.html" title="使用Let&#39;s Encrypt部署SSL证书两三事"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-06</div><div class="info-item-2">使用Let&#39;s Encrypt部署SSL证书两三事</div></div><div class="info-2"><div class="info-item-1">通过Let's Encrypt部署SSL证书</div></div></div></a><a class="pagination-related" href="/posts/4944c835.html" title="Vim文本替换"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-06</div><div class="info-item-2">Vim文本替换</div></div><div class="info-2"><div class="info-item-1">Vim 编辑器提供了强大的文本替换功能，主要通过 `:s`（substitute）命令实现。</div></div></div></a><a class="pagination-related" href="/posts/48956417.html" title="华为Quilway S5700配置两三事"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-16</div><div class="info-item-2">华为Quilway S5700配置两三事</div></div><div class="info-2"><div class="info-item-1">简要的介绍一下交换机怎么折腾</div></div></div></a><a class="pagination-related" href="/posts/d02a57e.html" title="Python C 扩展简述"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-18</div><div class="info-item-2">Python C 扩展简述</div></div><div class="info-2"><div class="info-item-1">最近了解了一下Python C扩展技术，简要地分享一下。</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="http://q.qlogo.cn/headimg_dl?dst_uin=927980270&amp;spec=640&amp;img_type=jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">岚椿桦</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lanshuye123"><i class="fab fa-github"></i><span>关注GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lanshuye123" target="_blank" title="Github"><i class="fab fa-github" style="color: #hdhfbb;"></i></a><a class="social-icon" href="mailto:lp@jamaccao.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://gitee.com/lanshuye" target="_blank" title="Gitea"><i class="fab fa-gitlab" style="color: #xf1d6;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF%E5%BC%95%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">背景引入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E6%95%85%E8%B5%B7%E5%9B%A0"><span class="toc-number">2.</span> <span class="toc-text">事故起因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E6%95%85%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">事故分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%9D%E8%AF%95%E8%A7%A3%E5%86%B3"><span class="toc-number">4.</span> <span class="toc-text">尝试解决</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#apt%E8%87%AA%E6%95%91%EF%BC%88%E5%A4%B1%E8%B4%A5%EF%BC%89"><span class="toc-number">4.1.</span> <span class="toc-text">apt自救（失败）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AC%E6%9C%BA%E7%BC%96%E8%AF%91coreutils%EF%BC%88%E5%A4%B1%E8%B4%A5%EF%BC%89"><span class="toc-number">4.2.</span> <span class="toc-text">本机编译coreutils（失败）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E5%88%B6%E6%9D%A5%E4%B8%80%E4%BB%BDbusybox-%EF%BC%88%E8%BF%98%E6%98%AF%E5%A4%B1%E8%B4%A5%E4%BA%86%EF%BC%89"><span class="toc-number">4.3.</span> <span class="toc-text">复制来一份busybox （还是失败了）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%87%E8%83%BD%E7%9A%84Python%E6%95%91%E5%9C%BA"><span class="toc-number">4.4.</span> <span class="toc-text">万能的Python救场</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E7%BB%AD%E4%BF%AE%E5%A4%8D"><span class="toc-number">5.</span> <span class="toc-text">后续修复</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E5%90%8E%E8%AF%B8%E8%91%9B%E4%BA%AE%EF%BC%9A%E6%89%8B%E6%90%93%E4%B8%80%E4%B8%AA-chmod"><span class="toc-number">6.</span> <span class="toc-text">事后诸葛亮：手搓一个 chmod</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/41db89e7.html" title="华为Quidway S5700配置VLAN">华为Quidway S5700配置VLAN</a><time datetime="2026-08-26T16:00:00.000Z" title="发表于 2026-08-27 00:00:00">2026-08-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/34badaf.html" title="运维的抢修笔记·升级系统与Coreutils">运维的抢修笔记·升级系统与Coreutils</a><time datetime="2026-06-14T16:13:00.000Z" title="发表于 2026-06-15 00:13:00">2026-06-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/698a8ca8.html" title="烧录AT89C52两三事">烧录AT89C52两三事</a><time datetime="2026-05-31T15:06:00.000Z" title="发表于 2026-05-31 23:06:00">2026-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/6dc42eef.html" title="二〇二五年十二月三十日·日记">二〇二五年十二月三十日·日记</a><time datetime="2025-12-30T14:35:00.000Z" title="发表于 2025-12-30 22:35:00">2025-12-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/f0547ed3.html" title="二〇二五十二月二十一日·日记">二〇二五十二月二十一日·日记</a><time datetime="2025-12-21T15:59:59.000Z" title="发表于 2025-12-21 23:59:59">2025-12-21</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2026 By 岚椿桦</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"data-lang":"zh-CN","data-input-position":"top"}
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'lanshuye123/TSNB',
+      'data-repo-id': 'R_kgDOIqb0kA',
+      'data-category-id': 'DIC_kwDOIqb0kM4CYOc3',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !false) {
+    if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div></div></body></html>
