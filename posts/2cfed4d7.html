@@ -1,0 +1,278 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>非标准STM32F407学习笔记（一） | 岚椿桦's Blog</title><meta name="author" content="岚椿桦"><meta name="copyright" content="岚椿桦"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="使用Linux环境下Pico Probe和OpenOCD、Ninja等来编译你的STM32F407项目">
+<meta property="og:type" content="article">
+<meta property="og:title" content="非标准STM32F407学习笔记（一）">
+<meta property="og:url" content="https://blog.jamaccao.cn/posts/2cfed4d7.html">
+<meta property="og:site_name" content="岚椿桦&#39;s Blog">
+<meta property="og:description" content="使用Linux环境下Pico Probe和OpenOCD、Ninja等来编译你的STM32F407项目">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://q.qlogo.cn/headimg_dl?dst_uin=927980270&spec=640&img_type=jpg">
+<meta property="article:published_time" content="2026-08-27T11:08:00.000Z">
+<meta property="article:modified_time" content="2026-08-27T13:59:31.455Z">
+<meta property="article:author" content="岚椿桦">
+<meta property="article:tag" content="技术">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://q.qlogo.cn/headimg_dl?dst_uin=927980270&spec=640&img_type=jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://blog.jamaccao.cn/posts/2cfed4d7.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '非标准STM32F407学习笔记（一）',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta http-equiv="Access-Control-Allow-Origin" content="*" /><meta name="generator" content="Hexo 8.1.1"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/images/sunshine.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">岚椿桦's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">非标准STM32F407学习笔记（一）</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">非标准STM32F407学习笔记（一）</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-27T11:08:00.000Z" title="发表于 2026-08-27 19:08:00">2026-08-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-27T13:59:31.455Z" title="更新于 2026-08-27 21:59:31">2026-08-27</time></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="非标准STM32F407学习笔记（一）"><a href="#非标准STM32F407学习笔记（一）" class="headerlink" title="非标准STM32F407学习笔记（一）"></a>非标准STM32F407学习笔记（一）</h1><h2 id="前情提要"><a href="#前情提要" class="headerlink" title="前情提要"></a>前情提要</h2><p>学习硬件设备固然是很有意思的一件事，不过使用某绿色（或者蓝色）礦ision配上带劲的音乐在Linux设备上并不是什么容易的事情，因此在本篇中，我将简要地介绍如何配置一套用常用组件组合起来的开发、编译、调试环境。</p>
+<h2 id="调试设备：Pico-Probe"><a href="#调试设备：Pico-Probe" class="headerlink" title="调试设备：Pico Probe"></a>调试设备：Pico Probe</h2><h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>树莓派Pico，是一款使用了RP2040的微控制器，可以通过刷入Pico Probe(debugprobe)固件使其转换为一个支持标准CMSIS-DAP协议（即SWCLK和SWDIO）的调试设备。在这种情况下，我们就可以省去ST-Link或类似的调试设备，而仅仅是通过一个简单的开发板来完成连接工作。<br>可以通过<a target="_blank" rel="noopener" href="https://github.com/raspberrypi/debugprobe">官方GitHub连接</a>获取Pico Probe固件，即(debugprobe_on_pico.uf2)。</p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>获取到这个固件之后，按住树莓派Pico上的<code>BOOTSEL</code>按钮并插入USB线到电脑上，会识别到出于FS Mode的树莓派Pico，此时只需要将上述uf2格式的固件复制到这个模拟U盘中，就可以自动安装相应的固件。Pico会自动重启，并且工作在预期的工作模式：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ lsusb</span><br><span class="line">...</span><br><span class="line">Bus 003 Device 015: ID 2e8a:000c Raspberry Pi Debugprobe on Pico (CMSIS-DAP)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h3 id="udev配置"><a href="#udev配置" class="headerlink" title="udev配置"></a>udev配置</h3><p>在现代Linux系统上，一般是使用udev来管理USB设备的权限，理论上在安装OpenOCD后会自动具有通用CMSIS-DAP的配置，不过我在这里附一个参考的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># CMSIS-DAP compatible adapters</span><br><span class="line">ATTRS&#123;product&#125;==&quot;*CMSIS-DAP*&quot;, MODE=&quot;660&quot;, GROUP=&quot;plugdev&quot;, TAG+=&quot;uaccess&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> udevadm control --reload-rules &amp;&amp; <span class="built_in">sudo</span> udevadm trigger   </span><br></pre></td></tr></table></figure>
+<h3 id="接线指南"><a href="#接线指南" class="headerlink" title="接线指南"></a>接线指南</h3><p>根据树莓派Debug on Pico指南（上述GitHub仓库中提到），位于<a target="_blank" rel="noopener" href="https://pip.raspberrypi.com/documents/RP-008276-DS">Getting Started with Pico PDF</a>。</p>
+<p>其附录 A.2. Debug with a second Pico or Pico 2 给出了接线指南：</p>
+<table>
+<thead>
+<tr>
+<th>GPIO</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GND</td>
+<td>地线</td>
+</tr>
+<tr>
+<td>VBUS</td>
+<td>5V USB电源</td>
+</tr>
+<tr>
+<td>GP2</td>
+<td>SWCLK</td>
+</tr>
+<tr>
+<td>GP3</td>
+<td>SWDIO</td>
+</tr>
+<tr>
+<td>GP4</td>
+<td>TXD</td>
+</tr>
+<tr>
+<td>GP5</td>
+<td>RXD</td>
+</tr>
+</tbody></table>
+<h3 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ openocd -f interface/cmsis-dap.cfg                       </span><br><span class="line">Open On-Chip Debugger 0.12.0+dev-01445-gb80f554fd-dirty (2026-04-11-11:03)</span><br><span class="line">Licensed under GNU GPL v2</span><br><span class="line">For bug reports, read</span><br><span class="line">        http://openocd.org/doc/doxygen/bugs.html</span><br><span class="line">Info : Listening on port 6666 for tcl connections</span><br><span class="line">Info : Listening on port 4444 for telnet connections</span><br><span class="line">Warn : An adapter speed is not selected in the init scripts. OpenOCD will try to run the adapter at very low speed (100 kHz).</span><br><span class="line">Warn : To remove this warnings and achieve reasonable communication speed with the target, set &quot;adapter speed&quot; or &quot;jtag_rclk&quot; in the init scripts.</span><br><span class="line">Info : Using CMSIS-DAPv2 interface with VID:PID=0x2e8a:0x000c, serial=530328472925599C</span><br><span class="line">Info : CMSIS-DAP: SWD supported</span><br><span class="line">Info : CMSIS-DAP: Atomic commands supported</span><br><span class="line">Info : CMSIS-DAP: Test domain timer supported</span><br><span class="line">Info : CMSIS-DAP: FW Version = 2.0.0</span><br><span class="line">Error: CMSIS-DAP: JTAG not supported</span><br></pre></td></tr></table></figure>
+
+<h2 id="编译环境-arm-none-eabi-gcc-STM32CubeMX-Ninja-CMake"><a href="#编译环境-arm-none-eabi-gcc-STM32CubeMX-Ninja-CMake" class="headerlink" title="编译环境: arm-none-eabi-gcc + STM32CubeMX + Ninja(CMake)"></a>编译环境: arm-none-eabi-gcc + STM32CubeMX + Ninja(CMake)</h2><h3 id="arm-none-eabi-gcc"><a href="#arm-none-eabi-gcc" class="headerlink" title="arm-none-eabi-gcc"></a>arm-none-eabi-gcc</h3><p>理论上可以用<a target="_blank" rel="noopener" href="https://support.arm.com/tools-and-software/gnu-toolchain">arm官方提供的gcc</a>，不过鉴于我们都用Linux了，为何不用包管理器呢：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> pacman -S arm-none-eabi-binutils arm-none-eabi-gcc</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ arm-none-eabi-gcc -v</span><br><span class="line">Using built-in specs.</span><br><span class="line">COLLECT_GCC=arm-none-eabi-gcc</span><br><span class="line">COLLECT_LTO_WRAPPER=/usr/lib/gcc/arm-none-eabi/16.2.0/lto-wrapper</span><br><span class="line">Target: arm-none-eabi</span><br><span class="line">Configured with: /build/arm-none-eabi-gcc/src/gcc-16.2.0/configure --target=arm-none-eabi --prefix=/usr --with-sysroot=/usr/arm-none-eabi --with-native-system-header-dir=/include --libexecdir=/usr/lib --enable-languages=c,c++ --enable-plugins --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-nls --disable-shared --disable-threads --disable-tls --with-gnu-as --with-gnu-ld --with-system-zlib --with-newlib --with-headers=/usr/arm-none-eabi/include --with-python-dir=share/gcc-arm-none-eabi --with-gmp --with-mpfr --with-mpc --with-isl --with-libelf --enable-gnu-indirect-function --with-host-libstdcxx=&#x27;-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm&#x27; --with-pkgversion=&#x27;Arch Repository&#x27; --with-bugurl=https://gitlab.archlinux.org/archlinux/packaging/packages/arm-none-eabi-gcc/-/issues --with-multilib-list=rmprofile</span><br><span class="line">Thread model: single</span><br><span class="line">Supported LTO compression algorithms: zlib zstd</span><br><span class="line">gcc version 16.2.0 (Arch Repository)</span><br></pre></td></tr></table></figure>
+
+<h3 id="STM32CubeMX"><a href="#STM32CubeMX" class="headerlink" title="STM32CubeMX"></a>STM32CubeMX</h3><p>可以从<a target="_blank" rel="noopener" href="https://www.st.com/en/development-tools/stm32cubemx.html#">STM32官网</a>获取STM32CubeMX，接着配置即可。<br>可以选取cmake作为编译器。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> build &amp;&amp; <span class="built_in">cd</span> build</span><br><span class="line">cmake -G Ninja \</span><br><span class="line">  -DCMAKE_TOOLCHAIN_FILE=../cmake/gcc-arm-none-eabi.cmake \</span><br><span class="line">  -DCMAKE_BUILD_TYPE=Debug ..</span><br><span class="line">ninja</span><br></pre></td></tr></table></figure>
+
+<h2 id="烧录环境-OpenOCD"><a href="#烧录环境-OpenOCD" class="headerlink" title="烧录环境: OpenOCD"></a>烧录环境: OpenOCD</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openocd -f interface/cmsis-dap.cfg -f target/stm32f4x.cfg -c <span class="string">&quot;program LED.elf verify reset exit&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="调试环境：GDB"><a href="#调试环境：GDB" class="headerlink" title="调试环境：GDB"></a>调试环境：GDB</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ openocd -f interface/cmsis-dap.cfg -f target/stm32f4x.cfg</span><br><span class="line">Info : [stm32f4x.cpu] starting gdb server on 3333</span><br><span class="line">Info : Listening on port 3333 for gdb connections</span><br><span class="line">Info : accepting &#x27;gdb&#x27; connection on tcp/3333</span><br><span class="line">$ gdb</span><br><span class="line">(gdb) target remote localhost:3333</span><br><span class="line">(gdb) file LED.elf</span><br><span class="line">(gdb) c</span><br></pre></td></tr></table></figure>
+
+<h2 id="附录："><a href="#附录：" class="headerlink" title="附录："></a>附录：</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">  ******************************************************************************</span><br><span class="line">  * @file    main.c</span><br><span class="line">  * @brief   STM32F407 PC13 LED 100ms 周期性闪烁 (完整版)</span><br><span class="line">  * @note    默认低电平点亮，高电平熄灭。若您的硬件相反，请交换 RESET/SET。</span><br><span class="line">  ******************************************************************************</span><br><span class="line">  */</span><br><span class="line"></span><br><span class="line">#include &quot;stm32f4xx_hal.h&quot;</span><br><span class="line"></span><br><span class="line">// 函数声明</span><br><span class="line">void SystemClock_Config(void);</span><br><span class="line">static void MX_GPIO_Init(void);</span><br><span class="line">void Error_Handler(void);</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">  * @brief  主函数</span><br><span class="line">  * @retval int</span><br><span class="line">  */</span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    // 1. 初始化HAL库</span><br><span class="line">    HAL_Init();</span><br><span class="line"></span><br><span class="line">    // 2. 配置系统时钟 (使用HSI内部振荡器 -&gt; PLL倍频至168MHz)</span><br><span class="line">    SystemClock_Config();</span><br><span class="line"></span><br><span class="line">    // 3. 初始化GPIO (PC13)</span><br><span class="line">    MX_GPIO_Init();</span><br><span class="line"></span><br><span class="line">    // 4. 主循环：LED以100ms间隔亮灭</span><br><span class="line">    while (1)</span><br><span class="line">    &#123;</span><br><span class="line">        // PC13输出低电平 -&gt; LED点亮 (注：多数开发板PC13为低电平有效)</span><br><span class="line">        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);</span><br><span class="line">        HAL_Delay(100);  // 延时100ms</span><br><span class="line"></span><br><span class="line">        // PC13输出高电平 -&gt; LED熄灭</span><br><span class="line">        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);</span><br><span class="line">        HAL_Delay(100);  // 延时100ms</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">  * @brief  系统时钟配置 (使用HSI -&gt; PLL)</span><br><span class="line">  * @note   最终时钟: HSI 16MHz / 16 * 336 / 2 = 168MHz</span><br><span class="line">  *         HCLK = 168MHz, APB1 = 42MHz, APB2 = 84MHz</span><br><span class="line">  * @retval 无</span><br><span class="line">  */</span><br><span class="line">void SystemClock_Config(void)</span><br><span class="line">&#123;</span><br><span class="line">    RCC_OscInitTypeDef RCC_OscInitStruct = &#123;0&#125;;</span><br><span class="line">    RCC_ClkInitTypeDef RCC_ClkInitStruct = &#123;0&#125;;</span><br><span class="line"></span><br><span class="line">    // 使能电源接口并配置电压调节器为模式1 (168MHz需要)</span><br><span class="line">    __HAL_RCC_PWR_CLK_ENABLE();</span><br><span class="line">    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);</span><br><span class="line"></span><br><span class="line">    // 配置振荡器：使用HSI (16MHz) 作为PLL输入</span><br><span class="line">    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;</span><br><span class="line">    RCC_OscInitStruct.HSIState = RCC_HSI_ON;</span><br><span class="line">    RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;</span><br><span class="line">    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;</span><br><span class="line">    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;</span><br><span class="line">    RCC_OscInitStruct.PLL.PLLM = 16;          // 分频: 16MHz / 16 = 1MHz</span><br><span class="line">    RCC_OscInitStruct.PLL.PLLN = 336;         // 倍频: 1MHz * 336 = 336MHz</span><br><span class="line">    RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2; // 主PLL分频: 336MHz / 2 = 168MHz</span><br><span class="line">    RCC_OscInitStruct.PLL.PLLQ = 7;           // 用于USB/SDIO: 336/7 = 48MHz</span><br><span class="line"></span><br><span class="line">    if (HAL_RCC_OscConfig(&amp;RCC_OscInitStruct) != HAL_OK)</span><br><span class="line">    &#123;</span><br><span class="line">        Error_Handler();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 配置时钟源、AHB/APB分频</span><br><span class="line">    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK</span><br><span class="line">                                  | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;</span><br><span class="line">    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;</span><br><span class="line">    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;   // HCLK = 168MHz</span><br><span class="line">    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;    // APB1 = 42MHz (最大允许)</span><br><span class="line">    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;    // APB2 = 84MHz (最大允许)</span><br><span class="line"></span><br><span class="line">    // 配置Flash等待周期 (168MHz需要5个等待周期)</span><br><span class="line">    if (HAL_RCC_ClockConfig(&amp;RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)</span><br><span class="line">    &#123;</span><br><span class="line">        Error_Handler();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">  * @brief  GPIO初始化函数 (PC13)</span><br><span class="line">  * @retval 无</span><br><span class="line">  */</span><br><span class="line">static void MX_GPIO_Init(void)</span><br><span class="line">&#123;</span><br><span class="line">    // 使能GPIOC时钟</span><br><span class="line">    __HAL_RCC_GPIOC_CLK_ENABLE();</span><br><span class="line"></span><br><span class="line">    GPIO_InitTypeDef GPIO_InitStruct = &#123;0&#125;;</span><br><span class="line"></span><br><span class="line">    // 配置PC13为推挽输出，无上下拉，低速度 (PC15~PC13驱动能力受限)</span><br><span class="line">    GPIO_InitStruct.Pin = GPIO_PIN_13;</span><br><span class="line">    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;</span><br><span class="line">    GPIO_InitStruct.Pull = GPIO_NOPULL;</span><br><span class="line">    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;</span><br><span class="line">    HAL_GPIO_Init(GPIOC, &amp;GPIO_InitStruct);</span><br><span class="line"></span><br><span class="line">    // 默认熄灭LED (输出高电平)</span><br><span class="line">    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">  * @brief  错误处理函数 (当时钟或外设初始化失败时进入死循环)</span><br><span class="line">  * @retval 无</span><br><span class="line">  */</span><br><span class="line">void Error_Handler(void)</span><br><span class="line">&#123;</span><br><span class="line">    // 用户可以在此添加调试代码（如点亮错误指示灯）</span><br><span class="line">    while (1)</span><br><span class="line">    &#123;</span><br><span class="line">        // 死循环</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.jamaccao.cn">岚椿桦</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.jamaccao.cn/posts/2cfed4d7.html">https://blog.jamaccao.cn/posts/2cfed4d7.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.jamaccao.cn" target="_blank">岚椿桦's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%8A%80%E6%9C%AF/">技术</a></div><div class="post-share"><div class="social-share" data-image="http://q.qlogo.cn/headimg_dl?dst_uin=927980270&amp;spec=640&amp;img_type=jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/41db89e7.html" title="华为Quidway S5700配置VLAN"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">华为Quidway S5700配置VLAN</div></div><div class="info-2"><div class="info-item-1">给交换机配置VLAN</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related no-desc" href="/posts/68ed1d1d.html" title="关于汇编的一些浅见"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-07</div><div class="info-item-2">关于汇编的一些浅见</div></div></div></a><a class="pagination-related" href="/posts/3acb0d81.html" title="关于安装Arch Linux两三事"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-29</div><div class="info-item-2">关于安装Arch Linux两三事</div></div><div class="info-2"><div class="info-item-1">Arch Linux是一个Linux发行版。</div></div></div></a><a class="pagination-related" href="/posts/4944c835.html" title="Vim文本替换"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-06</div><div class="info-item-2">Vim文本替换</div></div><div class="info-2"><div class="info-item-1">Vim 编辑器提供了强大的文本替换功能，主要通过 `:s`（substitute）命令实现。</div></div></div></a><a class="pagination-related" href="/posts/d02a57e.html" title="Python C 扩展简述"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-18</div><div class="info-item-2">Python C 扩展简述</div></div><div class="info-2"><div class="info-item-1">最近了解了一下Python C扩展技术，简要地分享一下。</div></div></div></a><a class="pagination-related" href="/posts/bce97097.html" title="Python对象的一些特性"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-07</div><div class="info-item-2">Python对象的一些特性</div></div><div class="info-2"><div class="info-item-1">有位同学找我问他代码中的一些bug，我觉得很有意思，特来分享。</div></div></div></a><a class="pagination-related" href="/posts/34badaf.html" title="运维的抢修笔记·升级系统与Coreutils"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-15</div><div class="info-item-2">运维的抢修笔记·升级系统与Coreutils</div></div><div class="info-2"><div class="info-item-1">升级Ubuntu系统与Coreutils的一些故事（事故）</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="http://q.qlogo.cn/headimg_dl?dst_uin=927980270&amp;spec=640&amp;img_type=jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">岚椿桦</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lanshuye123"><i class="fab fa-github"></i><span>关注GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/lanshuye123" target="_blank" title="Github"><i class="fab fa-github" style="color: #hdhfbb;"></i></a><a class="social-icon" href="mailto:lp@jamaccao.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #000000;"></i></a><a class="social-icon" href="https://gitee.com/lanshuye" target="_blank" title="Gitea"><i class="fab fa-gitlab" style="color: #xf1d6;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%9D%9E%E6%A0%87%E5%87%86STM32F407%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">非标准STM32F407学习笔记（一）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E6%83%85%E6%8F%90%E8%A6%81"><span class="toc-number">1.1.</span> <span class="toc-text">前情提要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E8%AE%BE%E5%A4%87%EF%BC%9APico-Probe"><span class="toc-number">1.2.</span> <span class="toc-text">调试设备：Pico Probe</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.2.1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-number">1.2.2.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#udev%E9%85%8D%E7%BD%AE"><span class="toc-number">1.2.3.</span> <span class="toc-text">udev配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E7%BA%BF%E6%8C%87%E5%8D%97"><span class="toc-number">1.2.4.</span> <span class="toc-text">接线指南</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81"><span class="toc-number">1.2.5.</span> <span class="toc-text">验证</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E7%8E%AF%E5%A2%83-arm-none-eabi-gcc-STM32CubeMX-Ninja-CMake"><span class="toc-number">1.3.</span> <span class="toc-text">编译环境: arm-none-eabi-gcc + STM32CubeMX + Ninja(CMake)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#arm-none-eabi-gcc"><span class="toc-number">1.3.1.</span> <span class="toc-text">arm-none-eabi-gcc</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#STM32CubeMX"><span class="toc-number">1.3.2.</span> <span class="toc-text">STM32CubeMX</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%83%A7%E5%BD%95%E7%8E%AF%E5%A2%83-OpenOCD"><span class="toc-number">1.4.</span> <span class="toc-text">烧录环境: OpenOCD</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%EF%BC%9AGDB"><span class="toc-number">1.5.</span> <span class="toc-text">调试环境：GDB</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95%EF%BC%9A"><span class="toc-number">1.6.</span> <span class="toc-text">附录：</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/2cfed4d7.html" title="非标准STM32F407学习笔记（一）">非标准STM32F407学习笔记（一）</a><time datetime="2026-08-27T11:08:00.000Z" title="发表于 2026-08-27 19:08:00">2026-08-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/41db89e7.html" title="华为Quidway S5700配置VLAN">华为Quidway S5700配置VLAN</a><time datetime="2026-08-26T16:00:00.000Z" title="发表于 2026-08-27 00:00:00">2026-08-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/34badaf.html" title="运维的抢修笔记·升级系统与Coreutils">运维的抢修笔记·升级系统与Coreutils</a><time datetime="2026-06-14T16:13:00.000Z" title="发表于 2026-06-15 00:13:00">2026-06-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/698a8ca8.html" title="烧录AT89C52两三事">烧录AT89C52两三事</a><time datetime="2026-05-31T15:06:00.000Z" title="发表于 2026-05-31 23:06:00">2026-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/6dc42eef.html" title="二〇二五年十二月三十日·日记">二〇二五年十二月三十日·日记</a><time datetime="2025-12-30T14:35:00.000Z" title="发表于 2025-12-30 22:35:00">2025-12-30</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2026 By 岚椿桦</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"data-lang":"zh-CN","data-input-position":"top"}
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'lanshuye123/TSNB',
+      'data-repo-id': 'R_kgDOIqb0kA',
+      'data-category-id': 'DIC_kwDOIqb0kM4CYOc3',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !false) {
+    if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div></div></body></html>
